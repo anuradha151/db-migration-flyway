@@ -24,7 +24,6 @@ public class AdsController {
         return adsService.save(adsDTO, principal);
     }
 
-
     @PutMapping("update")
     public ResponseEntity<?> update(@RequestBody AdsDTO adsDTO) {
         return adsService.update(adsDTO);

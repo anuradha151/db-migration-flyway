@@ -4,22 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ads_detail")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class AdsDetail {
+public class AdsDetail implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int ad_detail_id;
-    private String ad_category_name;
     private String ad_item_name;
     private String ad_item_condition;
     private String ad_title;
     private String ad_description;
     private String ad_city;
     private double ad_price;
-    private String ad_image;
+    private String ad_image_url;
     @Column(columnDefinition = "tinyint(1) default 1", nullable = false)
     private boolean deleted;
 
@@ -32,12 +32,12 @@ public class AdsDetail {
     }
 
 
-    public String getAd_category_name() {
-        return ad_category_name;
+    public int getAd_detail_id() {
+        return ad_detail_id;
     }
 
-    public void setAd_category_name(String ad_category_name) {
-        this.ad_category_name = ad_category_name;
+    public void setAd_detail_id(int ad_detail_id) {
+        this.ad_detail_id = ad_detail_id;
     }
 
     public String getAd_item_name() {
@@ -48,6 +48,13 @@ public class AdsDetail {
         this.ad_item_name = ad_item_name;
     }
 
+    public String getAd_item_condition() {
+        return ad_item_condition;
+    }
+
+    public void setAd_item_condition(String ad_item_condition) {
+        this.ad_item_condition = ad_item_condition;
+    }
 
     public String getAd_title() {
         return ad_title;
@@ -81,29 +88,12 @@ public class AdsDetail {
         this.ad_price = ad_price;
     }
 
-    public String getAd_image() {
-        return ad_image;
+    public String getAd_image_url() {
+        return ad_image_url;
     }
 
-    public void setAd_image(String ad_image) {
-        this.ad_image = ad_image;
-    }
-
-
-    public int getAd_detail_id() {
-        return ad_detail_id;
-    }
-
-    public void setAd_detail_id(int ad_detail_id) {
-        this.ad_detail_id = ad_detail_id;
-    }
-
-    public String getAd_item_condition() {
-        return ad_item_condition;
-    }
-
-    public void setAd_item_condition(String ad_item_condition) {
-        this.ad_item_condition = ad_item_condition;
+    public void setAd_image_url(String ad_image_url) {
+        this.ad_image_url = ad_image_url;
     }
 
     public boolean isDeleted() {
