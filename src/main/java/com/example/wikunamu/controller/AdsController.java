@@ -1,12 +1,15 @@
 package com.example.wikunamu.controller;
 
 import com.example.wikunamu.dto.AdsDTO;
+import com.example.wikunamu.model.AppUser;
 import com.example.wikunamu.service.AdsService;
+import com.example.wikunamu.service.AppUserService;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ads")
@@ -14,13 +17,16 @@ import java.security.Principal;
 public class AdsController {
 
     private final AdsService adsService;
+    private final  appUserService;
 
-    public AdsController(AdsService adsService) {
+    public AdsController(AdsService adsService, AppUserService appUserService) {
         this.adsService = adsService;
+        this.appUserService = appUserService;
     }
 
     @PostMapping("save")
     public ResponseEntity<?> save(@RequestBody AdsDTO adsDTO, Principal principal) {
+        ResponseEntity<?> byId = appUserService.findById(Integer.parseInt(principal.getName()));
         return adsService.save(adsDTO, principal);
     }
 

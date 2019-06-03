@@ -2,27 +2,19 @@ package com.example.wikunamu.dto;
 
 public class AdsDTO {
     private int ad_detail_id;
-    private String ad_category_name;
     private String ad_item_name;
     private String ad_item_condition;
     private String ad_title;
     private String ad_description;
     private String ad_city;
     private double ad_price;
-    private String ad_image;
+    private String ad_image_url;
     private AppUserDTO user;
 
     public AdsDTO() {
     }
 
 
-    public String getAd_category_name() {
-        return ad_category_name;
-    }
-
-    public void setAd_category_name(String ad_category_name) {
-        this.ad_category_name = ad_category_name;
-    }
 
     public String getAd_item_name() {
         return ad_item_name;
@@ -72,14 +64,6 @@ public class AdsDTO {
         this.ad_price = ad_price;
     }
 
-    public String getAd_image() {
-        return ad_image;
-    }
-
-    public void setAd_image(String ad_image) {
-        this.ad_image = ad_image;
-    }
-
 
     public int getAd_detail_id() {
         return ad_detail_id;
@@ -95,5 +79,13 @@ public class AdsDTO {
 
     public void setUser(AppUserDTO user) {
         this.user = user;
+    }
+
+    public String getAd_image_url() {
+        return ad_image_url;
+    }
+
+    public void setAd_image_url(String ad_image_url) {
+        this.ad_image_url = ad_image_url;
     }
 }

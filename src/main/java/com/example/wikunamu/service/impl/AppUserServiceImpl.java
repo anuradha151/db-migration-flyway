@@ -7,7 +7,7 @@ import com.example.wikunamu.jwt.JwtGenerator;
 import com.example.wikunamu.model.AppUser;
 import com.example.wikunamu.model.AuthToken;
 import com.example.wikunamu.model.enums.UserRole;
-import com.example.wikunamu.repository.UserRepository;
+import com.example.wikunamu.repository.AppUserRepository;
 import com.example.wikunamu.service.AppUserService;
 import com.example.wikunamu.util.ErrorResponse;
 import com.example.wikunamu.util.ResponseModel;
@@ -25,22 +25,22 @@ import java.util.Optional;
 public class AppUserServiceImpl implements AppUserService {
 
 
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AppUserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
+    public AppUserServiceImpl(AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public ResponseEntity<?> registerUser(AppUserDTO appUserDTO) {
-        Optional<AppUser> userByEmail = userRepository.getUserByEmail(appUserDTO.getUser_email());
+        Optional<AppUser> userByEmail = appUserRepository.getUserByEmail(appUserDTO.getUser_email());
         if (userByEmail.isPresent()) {
             return new ResponseEntity<>(new ErrorResponse("Existing user"), HttpStatus.BAD_REQUEST);
         }
         try {
-            userRepository.save(dTOToEntity(appUserDTO));
+            appUserRepository.save(dTOToEntity(appUserDTO));
             return new ResponseEntity<>(new ResponseModel(HttpStatus.OK.value(), "User added successfully", true), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,11 +51,11 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<?> updateUser(AppUserDTO appUserDTO) {
         try {
-            Optional<AppUser> optional = userRepository.findById(appUserDTO.getUser_id());
+            Optional<AppUser> optional = appUserRepository.findById(appUserDTO.getUser_id());
             if (optional.isPresent()) {
                 AppUser appUser = dTOToEntity(appUserDTO);
                 appUser.setUser_id(optional.get().getUser_id());
-                if (userRepository.save(appUser) != null) {
+                if (appUserRepository.save(appUser) != null) {
                     return new ResponseEntity<>("App user updated successfully", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("App user update failed", HttpStatus.BAD_REQUEST);
@@ -72,9 +72,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<?> removeUser(int user_id) {
         try {
-            Optional<AppUser> optional = userRepository.findById(user_id);
+            Optional<AppUser> optional = appUserRepository.findById(user_id);
             if (optional.isPresent()) {
-                userRepository.deleteById(user_id);
+                appUserRepository.deleteById(user_id);
                 return new ResponseEntity<>("User successfully removed", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -85,15 +85,14 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public ResponseEntity<?> searchUser(int user_id) {
+    public AppUserDTO findById(int user_id) {
         try {
-            Optional<AppUser> optional = userRepository.findById(user_id);
+            Optional<AppUser> optional = appUserRepository.findById(user_id);
+            AppUserDTO appUserDTO = new AppUserDTO();
             if (optional.isPresent()) {
-                AppUserDTO appUserDTO = entityToDTO(optional.get());
-                return new ResponseEntity<>(appUserDTO, HttpStatus.OK);
+                return entityToDTO(optional.get());
             } else {
-
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return appUserDTO;
             }
         } catch (Exception e) {
             throw new CustomException("Error occurred while fetching data");
@@ -102,7 +101,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ResponseEntity<?> loginUser(AppUserDTO appUserDTO) {
-        Optional<AppUser> appUser = userRepository.validateUser(appUserDTO.getUser_email());
+        Optional<AppUser> appUser = appUserRepository.validateUser(appUserDTO.getUser_email());
         if (!appUser.isPresent()) {
             return new ResponseEntity<>("Invalid login Credentials!", HttpStatus.UNAUTHORIZED);
         } else if (bCryptPasswordEncoder.matches(appUserDTO.getUser_password(), appUser.get().getUser_password())) {
@@ -120,7 +119,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<?> refreshToken(String refresh_token) {
         try {
-            Optional<AppUser> byRefreshToken = userRepository.findByRefreshToken(refresh_token);
+            Optional<AppUser> byRefreshToken = appUserRepository.findByRefreshToken(refresh_token);
             if (!byRefreshToken.isPresent()) {
                 return new ResponseEntity<>("Not a existing token", HttpStatus.UNAUTHORIZED);
             }
@@ -141,7 +140,7 @@ public class AppUserServiceImpl implements AppUserService {
         List<SimpleGrantedAuthority> grantedAuthorityList = new ArrayList<>();
         grantedAuthorityList.add(new SimpleGrantedAuthority("ROLE_" + appUser.getUser_role()));
         String refreshToken = JwtGenerator.generateRefreshToken(Integer.toString(appUser.getUser_id()), appUser.getUser_email(), grantedAuthorityList, JWTParameter.REFRESH_TOKEN_EXPIRATION, JWTParameter.JWT_SECRET);
-        userRepository.updateRefreshToken(appUser.getUser_email(), refreshToken);
+        appUserRepository.updateRefreshToken(appUser.getUser_email(), refreshToken);
         return refreshToken;
     }
 

@@ -11,7 +11,7 @@ public interface AppUserService {
 
     ResponseEntity<?> removeUser(int user_id);
 
-    ResponseEntity<?> searchUser(int user_id);
+    AppUserDTO findById(int user_id);
 
     ResponseEntity<?> refreshToken(String refresh_token);
 

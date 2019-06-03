@@ -6,8 +6,9 @@ import com.example.wikunamu.exception.CustomException;
 import com.example.wikunamu.model.AdsDetail;
 import com.example.wikunamu.model.AppUser;
 import com.example.wikunamu.repository.AdsRepository;
-import com.example.wikunamu.repository.UserRepository;
+import com.example.wikunamu.repository.AppUserRepository;
 import com.example.wikunamu.service.AdsService;
+import com.example.wikunamu.service.AppUserService;
 import com.example.wikunamu.util.ErrorResponse;
 import com.example.wikunamu.util.ResponseModel;
 import org.slf4j.Logger;
@@ -27,17 +28,16 @@ public class AdsServiceImpl implements AdsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdsServiceImpl.class);
 
     private final AdsRepository adsRepository;
-    private final UserRepository userRepository;
+    private final AppUserService appUserService;
 
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository) {
+    public AdsServiceImpl(AdsRepository adsRepository, AppUserRepository appUserRepository) {
         this.adsRepository = adsRepository;
-        this.userRepository = userRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @Override
-    public ResponseEntity<?> save(AdsDTO adsDTO, Principal principal) {
+    public ResponseEntity<?> save(AdsDTO adsDTO, AppUser appUser) {
         try {
-            Optional<AppUser> byId = userRepository.findById(Integer.parseInt(principal.getName()));
             AdsDetail adsDetail = dTOToEntity(adsDTO);
             adsDetail.setAppUser(byId.get());
             adsRepository.save(adsDetail);
@@ -56,14 +56,13 @@ public class AdsServiceImpl implements AdsService {
                 return new ResponseEntity<>(new ErrorResponse("Not a existing ads detail. Please provide existing details"), HttpStatus.BAD_REQUEST);
             }
             AdsDetail adsDetail = byId.get();
-            adsDetail.setAd_category_name(adsDTO.getAd_category_name());
             adsDetail.setAd_item_name(adsDTO.getAd_item_name());
             adsDetail.setAd_item_condition(adsDTO.getAd_item_condition());
             adsDetail.setAd_title(adsDTO.getAd_title());
             adsDetail.setAd_description(adsDTO.getAd_description());
             adsDetail.setAd_city(adsDTO.getAd_city());
             adsDetail.setAd_price(adsDTO.getAd_price());
-            adsDetail.setAd_image(adsDTO.getAd_image());
+            adsDetail.setAd_image_url(adsDTO.getAd_image_url());
             adsRepository.save(adsDetail);
             return new ResponseEntity<>(new ResponseModel(HttpStatus.OK.value(), "Ad updated successfully", true), HttpStatus.OK);
         } catch (Exception e) {
@@ -142,14 +141,13 @@ public class AdsServiceImpl implements AdsService {
         try {
             AdsDetail adsDetail = new AdsDetail();
             adsDetail.setAd_detail_id(adsDTO.getAd_detail_id());
-            adsDetail.setAd_category_name(adsDTO.getAd_category_name());
             adsDetail.setAd_item_name(adsDTO.getAd_item_name());
             adsDetail.setAd_item_condition(adsDTO.getAd_item_condition());
             adsDetail.setAd_title(adsDTO.getAd_title());
             adsDetail.setAd_description(adsDTO.getAd_description());
             adsDetail.setAd_city(adsDTO.getAd_city());
             adsDetail.setAd_price(adsDTO.getAd_price());
-            adsDetail.setAd_image(adsDTO.getAd_image());
+            adsDetail.setAd_image_url(adsDTO.getAd_image_url());
             return adsDetail;
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,14 +160,13 @@ public class AdsServiceImpl implements AdsService {
         try {
             AdsDTO adsDTO = new AdsDTO();
             adsDTO.setAd_detail_id(adsDetail.getAd_detail_id());
-            adsDTO.setAd_category_name(adsDetail.getAd_category_name());
             adsDTO.setAd_item_name(adsDetail.getAd_item_name());
             adsDTO.setAd_item_condition(adsDetail.getAd_item_condition());
             adsDTO.setAd_title(adsDetail.getAd_title());
             adsDTO.setAd_description(adsDetail.getAd_description());
             adsDTO.setAd_city(adsDetail.getAd_city());
             adsDTO.setAd_price(adsDetail.getAd_price());
-            adsDTO.setAd_image(adsDetail.getAd_image());
+            adsDTO.setAd_image_url(adsDetail.getAd_image_url());
             AppUser appUser = adsDetail.getAppUser();
             AppUserDTO appUserDTO = new AppUserDTO();
             appUserDTO.setUser_id(appUser.getUser_id());
